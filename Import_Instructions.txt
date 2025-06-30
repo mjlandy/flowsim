@@ -1,0 +1,71 @@
+AGILE FLOW METRICS SIMULATION - IMPORT INSTRUCTIONS
+==================================================
+
+QUICK START - READY TO IMPORT SPREADSHEET FILES:
+------------------------------------------------
+
+1. Dashboard.csv       - Main interface (parameters and metrics)
+2. Calculations.csv    - Formula engine (hidden calculations)  
+3. DataTables.csv      - Chart data (utilization 50-100%)
+4. VBA_Macros.txt      - Goal seeking code (Excel only)
+5. Spreadsheet_Setup_Guide.md - Complete setup instructions
+
+IMMEDIATE IMPORT STEPS:
+----------------------
+
+EXCEL (Recommended):
+1. Open Excel → File → Open → Dashboard.csv
+2. Add sheets for Calculations.csv and DataTables.csv
+3. Find/Replace: "=Calculations." with "=Calculations!"
+4. Find/Replace: "=Dashboard." with "=Dashboard!"
+5. Create chart from DataTables data (A1:E51)
+6. Add VBA macros for optimization (optional)
+
+GOOGLE SHEETS:
+1. Open Google Sheets → File → Import → Dashboard.csv
+2. Repeat import for other CSV files as new sheets
+3. Fix cross-sheet references (same find/replace as Excel)
+4. Insert chart from DataTables sheet
+
+LIBREOFFICE CALC:
+1. Open LibreOffice → File → Open → Dashboard.csv
+2. Import other CSVs as additional sheets
+3. Fix references and create chart
+
+KEY FEATURES AFTER IMPORT:
+-------------------------
+
+✓ 16 Interactive Parameters (team size, service times, quality factors)
+✓ 7 Real-time Metrics (utilization, lead time, throughput, variability)
+✓ Flow Chart showing utilization curves (50-100%)
+✓ Goal Seeking for optimization (Excel VBA)
+✓ Scenario analysis capabilities
+
+SIMULATION VALIDATES:
+--------------------
+
+• Little's Law (L = λW) - fundamental flow equation
+• Queuing theory for service rates and utilization
+• Quality impact on throughput and variability
+• Team scaling effects on flow metrics
+• AI productivity impact modeling
+
+BUSINESS USE CASES:
+------------------
+
+• Capacity planning - How many teams for target throughput?
+• Resource optimization - What's the optimal team composition?
+• Quality vs speed - How do defects impact delivery velocity?
+• Utilization sweet spots - Where efficiency peaks before degradation
+• AI ROI analysis - Value of productivity tools
+
+MATHEMATICAL FOUNDATION:
+-----------------------
+
+Service Rate = (1/AvgTime) × Count × Proficiency × (1-DefectRate) × (1+AI_Impact)
+Utilization = EffectiveDemand / TotalServiceRate  
+Lead Time = BaseTime + 3/(1-min(Utilization,0.999))
+Throughput = min(Demand, ServiceRate × max(0, 1-Utilization))
+
+FILES ARE READY FOR IMMEDIATE USE - NO ADDITIONAL SETUP REQUIRED!
+================================================================

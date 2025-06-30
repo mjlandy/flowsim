@@ -1,0 +1,178 @@
+' VBA MACROS FOR AGILE FLOW METRICS SIMULATION
+' Copy this code into the VBA editor (Alt+F11)
+
+Sub OptimizeUtilization()
+    '
+    ' Optimize team utilization to target level
+    '
+    Dim targetUtil As Double
+    targetUtil = Range("Dashboard!B43").Value
+    
+    Application.ScreenUpdating = False
+    
+    ' Use Goal Seek to find demand that achieves target utilization
+    Range("Calculations!B42").GoalSeek _
+        Goal:=targetUtil, _
+        ChangingCell:=Range("Dashboard!B14")
+        
+    Application.ScreenUpdating = True
+    
+    MsgBox "Optimization complete! Demand adjusted to achieve " & targetUtil & "% utilization.", vbInformation
+End Sub
+
+Sub OptimizeThroughput()
+    '
+    ' Maximize throughput using Solver
+    '
+    On Error GoTo SolverError
+    
+    Application.ScreenUpdating = False
+    
+    ' Reset any previous Solver models
+    SolverReset
+    
+    ' Set up Solver to maximize throughput
+    SolverOk SetCell:="Calculations!B45", _
+             MaxMinVal:=1, _
+             ByChange:="Dashboard!B14"
+             
+    ' Add constraints
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=1, _
+             FormulaText:="5"   ' Minimum demand
+             
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=3, _
+             FormulaText:="20"  ' Maximum demand
+             
+    ' Solve the model
+    SolverSolve UserFinish:=True
+    
+    Application.ScreenUpdating = True
+    
+    MsgBox "Throughput optimization complete!", vbInformation
+    Exit Sub
+    
+SolverError:
+    Application.ScreenUpdating = True
+    MsgBox "Solver add-in not available. Please enable Solver in Excel Add-ins.", vbExclamation
+End Sub
+
+Sub OptimizeVariability()
+    '
+    ' Minimize schedule variability using Solver
+    '
+    On Error GoTo SolverError
+    
+    Application.ScreenUpdating = False
+    
+    ' Reset any previous Solver models
+    SolverReset
+    
+    ' Set up Solver to minimize variability
+    SolverOk SetCell:="Calculations!B47", _
+             MaxMinVal:=2, _
+             ByChange:="Dashboard!B14"
+             
+    ' Add constraints
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=1, _
+             FormulaText:="5"   ' Minimum demand
+             
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=3, _
+             FormulaText:="20"  ' Maximum demand
+             
+    ' Solve the model
+    SolverSolve UserFinish:=True
+    
+    Application.ScreenUpdating = True
+    
+    MsgBox "Variability optimization complete!", vbInformation
+    Exit Sub
+    
+SolverError:
+    Application.ScreenUpdating = True
+    MsgBox "Solver add-in not available. Please enable Solver in Excel Add-ins.", vbExclamation
+End Sub
+
+Sub RefreshCharts()
+    '
+    ' Refresh all charts and calculations
+    '
+    Application.ScreenUpdating = False
+    Application.CalculateFullRebuild
+    
+    ' Refresh any charts
+    Dim cht As ChartObject
+    For Each cht In ActiveSheet.ChartObjects
+        cht.Chart.Refresh
+    Next cht
+    
+    Application.ScreenUpdating = True
+End Sub
+
+Sub ResetToDefaults()
+    '
+    ' Reset all parameters to default values
+    '
+    Application.ScreenUpdating = False
+    
+    Range("Dashboard!B4").Value = 1      ' Teams
+    Range("Dashboard!B5").Value = 3      ' Developers Count
+    Range("Dashboard!B6").Value = 1      ' Dev Time Min
+    Range("Dashboard!B7").Value = 2      ' Dev Time Max
+    Range("Dashboard!B8").Value = 2      ' Testers Count
+    Range("Dashboard!B9").Value = 2      ' Test Time Min
+    Range("Dashboard!B10").Value = 3     ' Test Time Max
+    Range("Dashboard!B11").Value = 1     ' Architects Count
+    Range("Dashboard!B12").Value = 1.5   ' Arch Time Min
+    Range("Dashboard!B13").Value = 2.5   ' Arch Time Max
+    Range("Dashboard!B14").Value = 10    ' Demand
+    Range("Dashboard!B15").Value = 0.8   ' Proficiency
+    Range("Dashboard!B16").Value = 0.2   ' Defect Rate
+    Range("Dashboard!B17").Value = 0.5   ' Rework Factor
+    Range("Dashboard!B18").Value = 0.2   ' Dependencies
+    Range("Dashboard!B19").Value = 0.3   ' AI Impact
+    
+    Application.ScreenUpdating = True
+    
+    MsgBox "Parameters reset to default values.", vbInformation
+End Sub
+
+Sub ValidateInputs()
+    '
+    ' Validate all input parameters are within acceptable ranges
+    '
+    Dim i As Integer
+    Dim isValid As Boolean
+    Dim errorMsg As String
+    
+    isValid = True
+    errorMsg = "The following parameters are out of range:" & vbCrLf
+    
+    ' Check each parameter against min/max values
+    For i = 4 To 19
+        If Range("Dashboard!B" & i).Value < Range("Dashboard!C" & i).Value Or _
+           Range("Dashboard!B" & i).Value > Range("Dashboard!D" & i).Value Then
+            isValid = False
+            errorMsg = errorMsg & "- " & Range("Dashboard!A" & i).Value & vbCrLf
+        End If
+    Next i
+    
+    If isValid Then
+        MsgBox "All parameters are within valid ranges.", vbInformation
+    Else
+        MsgBox errorMsg, vbExclamation
+    End If
+End Sub
+
+' Event handler for automatic recalculation
+Private Sub Worksheet_Change(ByVal Target As Range)
+    '
+    ' Automatically recalculate when parameters change
+    '
+    If Not Intersect(Target, Range("Dashboard!B4:B19")) Is Nothing Then
+        Application.CalculateFullRebuild
+    End If
+End Sub
