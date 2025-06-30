@@ -1,0 +1,228 @@
+AGILE TEAMS FLOW METRICS SIMULATION - EXCEL FORMULAS
+================================================================
+
+DASHBOARD SHEET SETUP:
+=====================
+
+A1: Agile Teams Flow Metrics Simulation
+(Format: Bold, 18pt, Merge A1:M1, Blue background, White text)
+
+PARAMETER INPUT SECTION (A3:D20):
+----------------------------------
+A3: Parameter                   B3: Value   C3: Min   D3: Max
+A4: Teams                      B4: 1       C4: 1     D4: 40
+A5: Developers (Count)         B5: 3       C5: 1     D5: 10
+A6: Developers Time Min        B6: 1.0     C6: 0.5   D6: 3.0
+A7: Developers Time Max        B7: 2.0     C7: 0.5   D7: 3.0
+A8: Testers (Count)           B8: 2       C8: 1     D8: 10
+A9: Testers Time Min          B9: 2.0     C9: 0.5   D9: 3.0
+A10: Testers Time Max         B10: 3.0    C10: 0.5  D10: 3.0
+A11: Architects (Count)       B11: 1      C11: 0    D11: 5
+A12: Architects Time Min      B12: 1.5    C12: 0.5  D12: 3.0
+A13: Architects Time Max      B13: 2.5    C13: 0.5  D13: 3.0
+A14: Demand (Features/Sprint) B14: 10     C14: 5    D14: 20
+A15: Proficiency (%)          B15: 0.8    C15: 0.5  D15: 1.0
+A16: Defect Rate (%)          B16: 0.2    C16: 0    D16: 0.5
+A17: Rework Factor            B17: 0.5    C17: 0    D17: 1.0
+A18: Dependencies (%)         B18: 0.2    C18: 0    D18: 0.5
+A19: AI Impact (%)            B19: 0.3    C19: 0    D19: 0.5
+
+KEY METRICS DISPLAY (F3:I20):
+------------------------------
+F3: Metric                    G3: Current               H3: Optimal   I3: Warning
+F4: Current Utilization       G4: =Calculations!B42     H4: 75%       I4: >90%
+F5: Lead Time (Days)          G5: =Calculations!B43     H5: 3.2       I5: >10
+F6: Throughput (Features)     G6: =Calculations!B45     H6: 8.5       I6: <5
+F7: Schedule Variability      G7: =Calculations!B47     H7: 2.1       I7: >5
+F8: Service Rate              G8: =Calculations!B31     H8: 12.3      I8: -
+F9: Effective Demand          G9: =Calculations!B40     H9: 11.0      I9: -
+F10: Cost Impact ($K/Sprint)  G10: =Calculations!B48    H10: 45       I10: >100
+
+GOAL SEEKING CONTROLS (A42:D50):
+---------------------------------
+A42: Goal Seeking Optimization
+A43: Target Utilization (%)    B43: 80    C43: [Button: Optimize Utilization]
+A44: Maximize Throughput       B44: Auto  C44: [Button: Optimize Throughput]
+A45: Minimize Variability      B45: Auto  C45: [Button: Optimize Variability]
+
+CALCULATIONS SHEET FORMULAS:
+============================
+
+PARAMETER REFERENCES (A1:B20):
+-------------------------------
+A1: Parameter               B1: Value
+A2: Teams                   B2: =Dashboard!B4
+A3: Dev_Count              B3: =Dashboard!B5
+A4: Dev_Time_Min           B4: =Dashboard!B6
+A5: Dev_Time_Max           B5: =Dashboard!B7
+A6: Test_Count             B6: =Dashboard!B8
+A7: Test_Time_Min          B7: =Dashboard!B9
+A8: Test_Time_Max          B8: =Dashboard!B10
+A9: Arch_Count             B9: =Dashboard!B11
+A10: Arch_Time_Min         B10: =Dashboard!B12
+A11: Arch_Time_Max         B11: =Dashboard!B13
+A12: Demand                B12: =Dashboard!B14
+A13: Proficiency           B13: =Dashboard!B15
+A14: Defect_Rate           B14: =Dashboard!B16
+A15: Rework_Factor         B15: =Dashboard!B17
+A16: Dependencies          B16: =Dashboard!B18
+A17: AI_Impact             B17: =Dashboard!B19
+
+SERVICE RATE CALCULATIONS (A25:B35):
+------------------------------------
+A25: Dev_Avg_Time          B25: =(B4+B5)/2
+A26: Test_Avg_Time         B26: =(B7+B8)/2
+A27: Arch_Avg_Time         B27: =(B10+B11)/2
+
+A28: Dev_Service_Rate      B28: =(1/B25)*B3*B13*(1-B16)*(1+B17)
+A29: Test_Service_Rate     B29: =(1/B26)*B6*B13*(1-B16)*(1+B17)
+A30: Arch_Service_Rate     B30: =(1/B27)*B9*B13*(1-B16)*(1+B17)
+
+A31: Total_Service_Rate    B31: =(B28+B29+B30)*B2
+A32: Total_Resources       B32: =(B3+B6+B9)*B2
+
+FLOW METRICS CALCULATIONS (A40:B50):
+------------------------------------
+A40: Effective_Demand      B40: =B12*(1+B14*B15*(1-B17*0.2))
+A41: Base_Utilization      B41: =IF(B31>0,B40/B31,1)
+A42: Current_Util_Pct      B42: =B41*100
+
+A43: Lead_Time             B43: =2+3/(1-MIN(B41,0.999)+0.001)
+A44: Max_Throughput        B44: =B31*(1-B14*(1-B17*0.2))
+A45: Throughput            B45: =MIN(B40,B44*MAX(0,1-B41))
+A46: WIP                   B46: =B40*B43
+A47: Variability           B47: =IF(B32>0,MAX(0,B43*(B41/MAX(1,B41))*(B46/B32)*0.1),0)
+A48: Cost_Impact           B48: =B43*10
+
+DATATABLES SHEET FORMULAS:
+==========================
+
+UTILIZATION SCENARIOS (A1:E51):
+-------------------------------
+A1: Util%    B1: Lead_Time    C1: Throughput    D1: Variability    E1: Cost
+
+Row 2 formulas (copy down to row 51):
+A2: 50
+B2: =2+3/(1-MIN(A2/100,0.999)+0.001)
+C2: =MIN(Calculations!$B$40,Calculations!$B$44*MAX(0,1-A2/100))
+D2: =IF(Calculations!$B$32>0,MAX(0,B2*(A2/100)*(Calculations!$B$46/Calculations!$B$32)*0.1),0)
+E2: =B2*10
+
+Fill A2:A51 with values 50 through 100 (increment by 1)
+
+VBA MACROS FOR GOAL SEEKING:
+============================
+
+Sub OptimizeUtilization()
+    Dim targetUtil As Double
+    targetUtil = Range("Dashboard!B43").Value
+    
+    Range("Calculations!B42").GoalSeek _
+        Goal:=targetUtil, _
+        ChangingCell:=Range("Dashboard!B14")
+End Sub
+
+Sub OptimizeThroughput()
+    SolverReset
+    SolverOk SetCell:="Calculations!B45", _
+             MaxMinVal:=1, _
+             ByChange:="Dashboard!B14"
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=1, _
+             FormulaText:="5"
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=3, _
+             FormulaText:="20"
+    SolverSolve UserFinish:=True
+End Sub
+
+Sub OptimizeVariability()
+    SolverReset
+    SolverOk SetCell:="Calculations!B47", _
+             MaxMinVal:=2, _
+             ByChange:="Dashboard!B14"
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=1, _
+             FormulaText:="5"
+    SolverAdd CellRef:="Dashboard!B14", _
+             Relation:=3, _
+             FormulaText:="20"
+    SolverSolve UserFinish:=True
+End Sub
+
+DATA VALIDATION SETTINGS:
+=========================
+
+For cells B4:B19 (Parameter Values):
+- Allow: Decimal
+- Data: Between
+- Minimum: Reference to column C (same row)
+- Maximum: Reference to column D (same row)
+- Input Message: "Enter value between [Min] and [Max]"
+- Error Alert: "Value must be within specified range"
+
+CONDITIONAL FORMATTING:
+=======================
+
+Parameter Values (B4:B19):
+- Red if value < minimum or > maximum
+- Yellow if approaching limits
+- Green if within optimal range
+
+Utilization Metric (G4):
+- Green: =G4<80
+- Yellow: =AND(G4>=80,G4<90)
+- Red: =G4>=90
+
+Lead Time Metric (G5):
+- Green: =G5<5
+- Yellow: =AND(G5>=5,G5<10)
+- Red: =G5>=10
+
+CHART SETUP:
+============
+
+Chart Type: Combination Chart
+Data Source: DataTables!A1:E51
+
+Series 1 - Lead Time:
+- Chart Type: Line
+- Y-axis: Primary
+- Color: Red
+- Line Weight: 3
+
+Series 2 - Throughput:
+- Chart Type: Line  
+- Y-axis: Secondary
+- Color: Blue
+- Line Weight: 3
+
+Series 3 - Variability:
+- Chart Type: Scatter
+- Y-axis: Primary
+- Color: Orange
+- Marker Size: Variable based on values
+
+Chart Elements:
+- Title: "Flow Metrics vs Resource Utilization"
+- X-axis: "Resource Utilization (%)"
+- Primary Y-axis: "Lead Time (Days) / Variability"
+- Secondary Y-axis: "Throughput (Features/Sprint)"
+- Vertical line at 90% utilization (red dashed)
+- Vertical line at 95% utilization (gray dashed)
+
+QUICK SETUP CHECKLIST:
+======================
+
+1. ✓ Create 3 sheets: Dashboard, Calculations, DataTables
+2. ✓ Hide Calculations and DataTables sheets
+3. ✓ Set up parameter input section with validation
+4. ✓ Create calculation formulas in Calculations sheet
+5. ✓ Build data table for chart in DataTables sheet
+6. ✓ Insert combination chart on Dashboard
+7. ✓ Add goal seeking buttons with VBA macros
+8. ✓ Apply conditional formatting for visual feedback
+9. ✓ Protect sheets (allow editing only in parameter cells)
+10. ✓ Test all functionality and validate results
+
+This Excel version replicates the Python simulation functionality with familiar spreadsheet tools and provides the same analytical insights for agile team flow optimization.
