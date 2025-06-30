@@ -82,7 +82,7 @@ class AgileFlowSimulationApp:
         """
         try:
             logger.info(f"Starting application on http://{host}:{port}")
-            self.app.run_server(
+            self.app.run(
                 debug=debug,
                 host=host,
                 port=port,
