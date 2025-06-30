@@ -88,8 +88,6 @@ class CallbackManager:
             [
                 # Goal seeking targets
                 State("target-util", "value"),
-                State("target-flow", "value"),
-                State("target-stability", "value"),
                 
                 # Slider ranges for permutation
                 State("teams-slider", "min"),

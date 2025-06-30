@@ -73,7 +73,7 @@ class ParameterControlFactory:
                 html.Div([
                     html.Label("Target Utilization (%)", style={'fontWeight': 'bold'}),
                     dcc.Input(
-                        id="target-util",
+                        id="target-util-input",
                         type="number",
                         value=80,
                         min=50,
@@ -379,6 +379,7 @@ class NotificationComponents:
     def create_change_notification() -> html.Div:
         """Create the change notification area."""
         return html.Div(
+            "Application loaded successfully.",
             id="change-notification",
             style={
                 'margin': '15px 0',
@@ -432,12 +433,7 @@ class LayoutBuilder:
                     self.control_factory.create_quality_section(),
                     self.control_factory.create_constraints_section()
                 ], className="six columns")
-            ], className="row"),
-            
-            # Hidden div for storing goal seeking values
-            html.Div(id="target-util-store", style={'display': 'none'}),
-            html.Div(id="target-flow-store", style={'display': 'none'}),
-            html.Div(id="target-stability-store", style={'display': 'none'})
+            ], className="row")
             
         ], style={
             'padding': '20px',
